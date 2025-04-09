@@ -1,0 +1,8 @@
+@import "mixins.scss";
+@mixin widgets_3dviewer_FileManager_base {
+
+}
+
+.widgets_3dviewer_FileManager_style_default {
+@include widgets_3dviewer_FileManager_base
+}
