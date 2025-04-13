@@ -83,12 +83,12 @@
 	</xs:complexType>
 	<xs:simpleType name="widgets.3dviewer.ThreejsViewer.Events">
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="AnimationFinished"></xs:enumeration>
 			<xs:enumeration value="Click"></xs:enumeration>
 			<xs:enumeration value="DisabledClick"></xs:enumeration>
 			<xs:enumeration value="EnableChanged"></xs:enumeration>
 			<xs:enumeration value="FocusIn"></xs:enumeration>
 			<xs:enumeration value="FocusOut"></xs:enumeration>
+			<xs:enumeration value="TransformDone"></xs:enumeration>
 			<xs:enumeration value="VisibleChanged"></xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>

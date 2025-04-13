@@ -4,7 +4,6 @@ define([
     "widgets/3dviewer/common/libs/three.amd.min",
     "widgets/3dviewer/common/libs/OrbitControls.amd.min",
     "widgets/3dviewer/ThreejsViewer/libs/config/EditorHandles",
-    "widgets/3dviewer/common/libs/BreaseResizeObserver",
     "widgets/3dviewer/FileManager/FileManager",
 ], function (
     {
@@ -17,9 +16,12 @@ define([
     THREE,
     OrbitControls,
     EditorHandles,
-    BreaseResizeObserver,
     FileManager
 ) {
+    // ========================================================================
+    // CLASS DEFINITION AND CONFIGURATION
+    // ========================================================================
+
     /**
      * @class widgets.3dviewer.ThreejsViewer
      * This widget is a 3d viewer based on three.js.
@@ -80,14 +82,25 @@ define([
         transform: "{}",
     };
 
+    var maxSizeFileChunk = 100*1024; // In KB
+
     const WidgetClass = SuperClass.extend(function ThreejsViewer() {
         SuperClass.apply(this, arguments);
     }, defaults_properties);
 
     const p = WidgetClass.prototype;
 
+    // ========================================================================
+    // INITIALIZATION AND SETUP
+    // ========================================================================
+
+    /**
+     * Initialize the widget
+     */
     p.init = function () {
         SuperClass.prototype.init.call(this);
+        
+        // Create container for Three.js renderer
         this._container = $("<div></div>");
         this._container.addClass("threejs-viewer-container");
         this._container.css({
@@ -101,6 +114,7 @@ define([
         this._activeAnimations = {};
         this._transformQueue = [];
 
+        // Initialize event handlers
         this._events = {
             init: [],
             start: [],
@@ -113,10 +127,17 @@ define([
             update: [],
         };
 
+        // Initialize either mock content (in edit mode) or real Three.js scene
         if (breaseConfig.editMode) {
             this._initMockThreeJs();
         } else {
             this.fileManager = FileManager.createWidget(this.elem.id);
+            this.fileManager.onChunk(this.elem.id, (chunk) => {
+                this.fileTotalReaded += chunk.bytesRead;
+                // Calculate progress and update loading screen if applicable
+                this.updateLoadingScreen(this.fileTotalReaded / this.fileSize);
+                
+            });
             this._initThreeJs();
 
             // Load initial scene if path is provided
@@ -130,10 +151,12 @@ define([
         }
     };
 
+    /**
+     * Initialize Three.js scene, camera, renderer and controls
+     */
     p._initThreeJs = function () {
         this._loader = new THREE.ObjectLoader();
         this._scene = new THREE.Scene();
-
         this._startTime = this._prevTime = performance.now();
 
         // Create camera
@@ -169,6 +192,9 @@ define([
         }
     };
 
+    /**
+     * Initialize OrbitControls for camera interaction
+     */
     p._initControls = function () {
         this._controls = new OrbitControls.OrbitControls(
             this._camera,
@@ -182,6 +208,13 @@ define([
         this._controls.maxPolarAngle = Math.PI / 2;
     };
 
+    // ========================================================================
+    // SCENE LOADING AND MANAGEMENT
+    // ========================================================================
+
+    /**
+     * Show loading screen with spinner
+     */
     p._showLoadingScreen = function () {
         // Create loading screen with spinner and progress info
         this._loadingScreen = $(`
@@ -218,6 +251,32 @@ define([
             marginBottom: "20px",
         });
 
+        // Add text and progress bar
+        this._loadingScreen.append(
+            `<div class="loading-text">Loading...</div>`
+        );
+        this._loadingScreen.append(
+            `<div class="loading-progress" style="width: 80%; height: 10px; background-color: rgba(255, 255, 255, 0.3); margin-top: 10px;">
+                <div class="loading-progress-bar" style="width: 0%; height: 100%; background-color: #3498db;"></div>
+            </div>`
+        );
+        this._loadingScreen.find(".loading-progress-bar").css({
+            transition: "width 0.5s ease",
+        });
+        this._loadingScreen.find(".loading-text").css({
+            fontSize: "18px",
+            fontWeight: "bold",
+            marginBottom: "10px",
+        });
+        this._loadingScreen.find(".loading-progress").css({
+            position: "relative",
+            width: "80%",
+            height: "10px",
+            backgroundColor: "rgba(255, 255, 255, 0.3)",
+            borderRadius: "5px",
+            overflow: "hidden",
+        });
+
         // Add to container
         this._container.css("position", "relative").append(this._loadingScreen);
 
@@ -229,6 +288,25 @@ define([
         }
     };
 
+    /**
+     * Update loading screen progress
+     * @param {Number} progress - Progress value (0 to 1)
+     * @param {String} text - Optional text to display
+     * */
+    p.updateLoadingScreen = function (progress, text) {
+        if (this._loadingScreen) {
+            this._loadingScreen.find(".loading-progress-bar").css({
+                width: `${progress * 100}%`,
+            });
+            if (text) {
+                this._loadingScreen.find(".loading-text").text(text);
+            }
+        }
+    }
+
+    /**
+     * Hide loading screen with fade-out animation
+     */
     p._hideLoadingScreen = function () {
         if (this._loadingScreen) {
             // Add fade-out animation before removal
@@ -245,6 +323,11 @@ define([
         }
     };
 
+    /**
+     * Load scene from file path
+     * @param {String} filePath - Path to the scene file
+     * @returns {Promise} Promise that resolves when scene is loaded
+     */
     p.loadSceneFromPath = function (filePath) {
         if (this._loading) {
             return Promise.reject("Another scene is currently loading");
@@ -255,65 +338,122 @@ define([
 
         return new Promise((resolve, reject) => {
             self._showLoadingScreen();
-            self._loadSceneFile(filePath, "")
-                .then((fileData) => {
-                    try {
-                        const sceneData = JSON.parse(fileData);
-                        self.load(sceneData);
-                        // Apply any transforms that were set before scene loaded
-                        if (
-                            this._transformValue &&
-                            this._transformValue !== "{}"
-                        ) {
-                            this.applyTransformations();
-                        }
-                        resolve();
-                    } catch (jsonError) {
-                        self._loadSceneFile(filePath, "BINARY")
-                            .then((binaryData) => {
-                                try {
-                                    const sceneData = JSON.parse(binaryData);
-                                    self.load(sceneData);
-                                    // Apply any transforms that were set before scene loaded
-                                    if (
-                                        this._transformValue &&
-                                        this._transformValue !== "{}"
-                                    ) {
-                                        this.applyTransformations();
-                                    }
-                                    resolve();
-                                } catch (binaryError) {
-                                    reject(
-                                        new Error(
-                                            `Failed to parse scene file: ${binaryError.message}`
-                                        )
-                                    );
-                                }
-                            })
-                            .catch((binaryLoadError) => {
-                                reject(binaryLoadError);
-                            });
-                    }
-                })
-                .catch((loadError) => {
-                    reject(loadError);
-                })
-                .finally(() => {
+            self.updateLoadingScreen(0, "Browse for file...");
+            var folderPath = filePath.substring(
+                0,
+                filePath.lastIndexOf("/") + 1
+            );
+            self.fileManager.browse(self.elem.id, folderPath, "FILES").then((browseInfo) => {
+                // Check if the file exists in the browse info
+                const fileInfo = browseInfo.find((file) => file.Path === filePath);
+                if (!fileInfo) {
                     self._hideLoadingScreen();
                     self._loading = false;
-                });
+                    reject(new Error(`File not found: ${filePath}`));
+                    return;
+                }
+                // Get file size
+                this.fileSize = fileInfo.Size;
+
+                // Set total size readed to 0
+                this.fileTotalReaded = 0;
+
+                self.updateLoadingScreen(0, "Reading scene file...");
+                self._loadSceneFile(filePath, "LOCK", "TEXT")
+                    .then((fileData) => {
+                        self._unlockSceneFile();
+                        try {
+                            self.updateLoadingScreen(0, "Parsing scene file...");
+                            const sceneData = JSON.parse(fileData);
+                            self.updateLoadingScreen(0, "Load scene file...");
+                            self.load(sceneData);
+                            // Apply any transforms that were set before scene loaded
+                            if (
+                                this._transformValue &&
+                                this._transformValue !== "{}"
+                            ) {
+                                this.applyTransformations();
+                            }
+                            resolve();
+                        } catch (jsonError) {
+                            self._unlockSceneFile();
+                            self._loadSceneFile(filePath, "READONLY", "BINARY")
+                                .then((binaryData) => {
+                                    self._unlockSceneFile();
+                                    try {
+                                        const sceneData = JSON.parse(binaryData);
+                                        self.load(sceneData);
+                                        // Apply any transforms that were set before scene loaded
+                                        if (
+                                            this._transformValue &&
+                                            this._transformValue !== "{}"
+                                        ) {
+                                            this.applyTransformations();
+                                        }
+                                        resolve();
+                                    } catch (binaryError) {
+                                        reject(
+                                            new Error(
+                                                `Failed to parse scene file: ${binaryError.message}`
+                                            )
+                                        );
+                                    }
+                                })
+                                .catch((binaryLoadError) => {
+                                    self._unlockSceneFile();
+                                    reject(binaryLoadError);
+                                });
+                        }
+                    })
+                    .catch((loadError) => {
+                        self._unlockSceneFile();
+                        reject(loadError);
+                    })
+                    .finally(() => {
+                        self._hideLoadingScreen();
+                        self._loading = false;
+                    });
+            }).catch((infoError) => {
+                console.error("Error getting file info:", infoError);
+                reject(infoError);
+            });
         });
     };
 
-    p._loadSceneFile = function (filePath, encoding) {
+    /**
+     * Load scene file using FileManager
+     * @param {String} filePath - Path to the file
+     * @param {String} flags - File access flags
+     * @param {String} encoding - File encoding
+     * @returns {Promise} Promise with file data
+     */
+    p._loadSceneFile = function (filePath, flags, encoding) {
         return this.fileManager.load(
             this.elem.id,
             filePath,
-            "",
-            encoding || ""
+            flags,
+            encoding || "",
+            maxSizeFileChunk,
+            0
         );
     };
 
+    p._unlockSceneFile = function () {
+        if (this.settings.sceneFilePath !== undefined && this.settings.sceneFilePath !== '') {
+            this.fileManager.clearFlags(this.elem.id, this.settings.sceneFilePath)?.catch(() => {});
+        }
+    };
+
+    p._lockSceneFile = function () {
+        if (this.settings.sceneFilePath !== undefined && this.settings.sceneFilePath !== '') {
+            this.fileManager.lock(this.elem.id, this.settings.sceneFilePath);
+        }
+    };
+
+    /**
+     * Load scene from JSON data
+     * @param {Object} json - Scene data in JSON format
+     */
     p.load = function (json) {
         if (!json) return;
 
@@ -353,6 +493,10 @@ define([
         this._dispatchEvent("init", arguments);
     };
 
+    /**
+     * Process scripts attached to objects in the scene
+     * @param {Object} scripts - Scripts data
+     */
     p._processScripts = function (scripts) {
         var scriptWrapParams = "player,renderer,scene,camera";
         var scriptWrapResultObj = {};
@@ -418,6 +562,14 @@ define([
         }
     };
 
+    // ========================================================================
+    // SCENE MANAGEMENT METHODS
+    // ========================================================================
+
+    /**
+     * Set camera for the scene
+     * @param {Object} camera - Three.js camera (THREE.Camera)
+     */
     p.setCamera = function (camera) {
         this._camera = camera;
         if (this._camera) {
@@ -435,15 +587,28 @@ define([
         }
     };
 
+    /**
+     * Set scene
+     * @param {Object} scene - Three.js scene (THREE.Scene)
+     */
     p.setScene = function (scene) {
         this._scene = scene;
         this._fitSceneToView();
     };
 
+    /**
+     * Set renderer pixel ratio
+     * @param {Number} pixelRatio - Device pixel ratio
+     */
     p.setPixelRatio = function (pixelRatio) {
         this._renderer.setPixelRatio(pixelRatio);
     };
 
+    /**
+     * Set renderer size
+     * @param {Number} width - Width in pixels
+     * @param {Number} height - Height in pixels
+     */
     p.setSize = function (width, height) {
         this.width = width;
         this.height = height;
@@ -456,21 +621,9 @@ define([
         this._renderer.setSize(width, height);
     };
 
-    p._dispatchEvent = function (type, args) {
-        if (!this.settings.enableScripts) {
-            console.warn("Scripts are disabled. Event not dispatched:", type);
-            return;
-        }
-        const handlers = this._events[type] || [];
-        for (let i = 0; i < handlers.length; i++) {
-            try {
-                handlers[i](args);
-            } catch (e) {
-                console.error(`Error in ${type} event handler:`, e);
-            }
-        }
-    };
-
+    /**
+     * Fit scene to view by adjusting camera position
+     */
     p._fitSceneToView = function () {
         if (!this._scene) return;
 
@@ -489,7 +642,14 @@ define([
             this._controls.update();
         }
     };
-    // Animation and playback control
+
+    // ========================================================================
+    // ANIMATION AND PLAYBACK CONTROL
+    // ========================================================================
+
+    /**
+     * Start animation playback
+     */
     p.play = function () {
         if (this._playing) return;
 
@@ -508,6 +668,9 @@ define([
         this._animate();
     };
 
+    /**
+     * Stop animation playback
+     */
     p.stop = function () {
         if (!this._playing) return;
 
@@ -524,6 +687,9 @@ define([
         cancelAnimationFrame(this._animationFrameId);
     };
 
+    /**
+     * Animation loop
+     */
     p._animate = function () {
         this._animationFrameId = requestAnimationFrame(
             this._animate.bind(this)
@@ -557,6 +723,30 @@ define([
         this._prevTime = time;
     };
 
+    // ========================================================================
+    // EVENT HANDLING
+    // ========================================================================
+
+    /**
+     * Dispatch event to registered handlers
+     * @param {String} type - Event type
+     * @param {Array} args - Event arguments
+     */
+    p._dispatchEvent = function (type, args) {
+        if (!this.settings.enableScripts) {
+            console.warn("Scripts are disabled. Event not dispatched:", type);
+            return;
+        }
+        const handlers = this._events[type] || [];
+        for (let i = 0; i < handlers.length; i++) {
+            try {
+                handlers[i](args);
+            } catch (e) {
+                console.error(`Error in ${type} event handler:`, e);
+            }
+        }
+    };
+
     // Event handlers
     p._onKeyDown = function (event) {
         this._dispatchEvent("keydown", event);
@@ -578,6 +768,13 @@ define([
         this._dispatchEvent("pointermove", event);
     };
 
+    // ========================================================================
+    // EDITOR MODE FUNCTIONALITY
+    // ========================================================================
+
+    /**
+     * Initialize mock Three.js content for editor mode
+     */
     p._initMockThreeJs = function () {
         this._scene = new THREE.Scene();
         this._scene.background = new THREE.Color(0x777777);
@@ -601,6 +798,9 @@ define([
         this._animate();
     };
 
+    /**
+     * Add demo content for editor mode
+     */
     p._addEditorDemoContent = function () {
         const ambientLight = new THREE.AmbientLight(0x404040);
         this._scene.add(ambientLight);
@@ -622,6 +822,9 @@ define([
         this._scene.add(spotLight.target);
     };
 
+    /**
+     * Initialize editor handles for widget customization
+     */
     p._initEditor = function () {
         var editorHandles = new EditorHandles(this);
         this.getHandles = function () {
@@ -637,6 +840,9 @@ define([
         );
     };
 
+    /**
+     * Handle window resize events
+     */
     p._onWindowResize = function () {
         this._camera.aspect =
             this._container.width() / this._container.height();
@@ -647,6 +853,13 @@ define([
         );
     };
 
+    // ========================================================================
+    // TRANSFORMATION AND ANIMATION SYSTEM
+    // ========================================================================
+
+    /**
+     * Apply transformations to scene objects
+     */
     p.applyTransformations = function () {
         if (!this._transformValue || this._transformValue === "{}") return;
 
@@ -659,6 +872,10 @@ define([
         }
     };
 
+    /**
+     * Queue transformations for processing
+     * @param {Object|Array} transforms - Transformations to queue
+     */
     p._queueTransforms = function (transforms) {
         // Clear any pending transforms
         this._transformQueue = [];
@@ -671,6 +888,9 @@ define([
         }
     };
 
+    /**
+     * Process queued transformations
+     */
     p._processTransformQueue = function () {
         this._transformQueue.forEach((transform) => {
             // Skip if target not found
@@ -695,6 +915,11 @@ define([
         this._transformQueue = [];
     };
 
+    /**
+     * Apply immediate transformation to target object
+     * @param {Object} target - Target object (THREE.Object3D)
+     * @param {Object} transform - Transformation data
+     */
     p._applyImmediateTransform = function (target, transform) {
         if (transform.position) {
             target.position.set(
@@ -739,6 +964,11 @@ define([
         }
     };
 
+    /**
+     * Queue animation for target object
+     * @param {Object} target - Target object (THREE.Object3D)
+     * @param {Object} transform - Transformation data
+     */
     p._queueAnimation = function (target, transform) {
         const animationId = `transform_${transform.target}_${Date.now()}`;
         // Convert rotation degrees to radians for animation
@@ -779,6 +1009,9 @@ define([
         this._activeAnimations[animationId] = animation;
     };
 
+    /**
+     * Animate queued animations
+     */
     p._animateAnimation = function () {
         // Update all active animations
         Object.entries(this._activeAnimations).forEach(([id, anim]) => {
@@ -826,6 +1059,12 @@ define([
         });
     };
 
+    /**
+     * Apply easing function to animation progress
+     * @param {Number} t - Progress (0-1)
+     * @param {String} easingType - Easing type (linear, easeIn, easeOut, easeInOut)
+     * @returns {Number} Eased progress
+     */
     p._applyEasing = function (t, easingType) {
         switch (easingType) {
             case "easeIn":
@@ -838,6 +1077,10 @@ define([
                 return t; // linear
         }
     };
+
+    // ========================================================================
+    // PUBLIC API METHODS
+    // ========================================================================
 
     /**
      * @method setTransform
@@ -862,7 +1105,10 @@ define([
         return this._transformValue;
     };
 
-    // Widget registration
+    // ========================================================================
+    // WIDGET REGISTRATION
+    // ========================================================================
+
     if (window.lib_br?.controller?.widgetRegistry) {
         lib_br.controller.widgetRegistry.define(
             "widgets.3dviewer.ThreejsViewer",

@@ -11,7 +11,6 @@
 				<File>widgets/3dviewer/common/libs/three.amd.min.js</File>
 				<File>widgets/3dviewer/common/libs/OrbitControls.amd.min.js</File>
 				<File>widgets/3dviewer/ThreejsViewer/libs/config/EditorHandles.js</File>
-				<File>widgets/3dviewer/common/libs/BreaseResizeObserver.js</File>
 				<File>widgets.3dviewer.ThreejsViewer.js</File>
 			</Files>
 			<Folders>
@@ -71,14 +70,6 @@
 			<Method name="ShowTooltip" read="false"/>
 		</Methods>
 		<Events>
-			<Event name="AnimationFinished">
-				<Description>Fired when an animation is finished.</Description>
-				<Arguments>
-					<Argument name="id" type="String" index="0" required="true">
-						<Description>Identifier of the animation</Description>
-					</Argument>
-				</Arguments>
-			</Event>
 			<Event name="Click">
 				<Description>Fired when element is clicked on.</Description>
 				<Arguments>
@@ -123,6 +114,14 @@
 			</Event>
 			<Event name="FocusOut">
 				<Description>Fired when the widgets lost focus</Description>
+			</Event>
+			<Event name="TransformDone">
+				<Description>Fired when an animation is finished.</Description>
+				<Arguments>
+					<Argument name="id" type="String" index="0" required="true">
+						<Description>Identifier of the animation</Description>
+					</Argument>
+				</Arguments>
 			</Event>
 			<Event name="VisibleChanged">
 				<Description>Fired when the visibility of the widget changes.</Description>

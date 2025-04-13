@@ -527,8 +527,28 @@ define(['brease',
      */
     p._loadingChunks = function (telegram) {
         if (this.data[telegram.parameter.elemId].path !== telegram.parameter.Path) return;
+        
+        // Store the current chunk data
+        const currentChunk = telegram.parameter.Encoding === 'BINARY' 
+            ? this._decodeHEX(telegram.data.Content) 
+            : telegram.data.Content;
+        
+        // Check if there's a chunk callback registered for this widget
+        if (this.promises[telegram.parameter.elemId].Load.chunkCallback) {
+            try {
+                // Call the chunk callback with the current chunk data
+                this.promises[telegram.parameter.elemId].Load.chunkCallback({
+                    data: currentChunk,
+                    bytesRead: telegram.data.BytesRead,
+                    offset: telegram.parameter.Offset,
+                    isFinal: telegram.data.Eof
+                });
+            } catch (e) {
+                console.error('Chunk callback error:', e);
+            }
+        }
+        
         if (!telegram.data.Eof) {
-            //(elemId, path, flags, enc, ms, offset)
             this.data[telegram.parameter.elemId].data += telegram.data.Content;
             this._load(telegram.parameter.elemId,
                 telegram.parameter.Path,
@@ -544,6 +564,19 @@ define(['brease',
             this._handlePromise(this.data[telegram.parameter.elemId].data, telegram.parameter.elemId, telegram.methodID, 'resolve');
             delete this.data[telegram.parameter.elemId];
         }
+    };
+
+    /**
+     * @method onChunk
+     * Register a callback to process each chunk as it arrives
+     * @param {String} elemId id of the widget using the FileManager
+     * @param {Function} callback Function to call for each chunk
+     */
+    p.onChunk = function (elemId, callback) {
+        if (!this.promises[elemId]) {
+            this.addPromises(elemId);
+        }
+        this.promises[elemId].Load.chunkCallback = callback;
     };
 
     /**
