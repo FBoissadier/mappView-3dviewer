@@ -11,6 +11,11 @@
 				<File>widgets/3dviewer/common/libs/three.amd.min.js</File>
 				<File>widgets/3dviewer/common/libs/OrbitControls.amd.min.js</File>
 				<File>widgets/3dviewer/ThreejsViewer/libs/config/EditorHandles.js</File>
+				<File>./libs/Renderer.js</File>
+				<File>./libs/Model.js</File>
+				<File>./libs/Controller.js</File>
+				<File>./libs/Editor.js</File>
+				<File>./libs/Utils.js</File>
 				<File>widgets.3dviewer.ThreejsViewer.js</File>
 			</Files>
 			<Folders>
@@ -116,10 +121,10 @@
 				<Description>Fired when the widgets lost focus</Description>
 			</Event>
 			<Event name="TransformDone">
-				<Description>Fired when an animation is finished.</Description>
+				<Description>Triggered when the transformation is done.</Description>
 				<Arguments>
 					<Argument name="id" type="String" index="0" required="true">
-						<Description>Identifier of the animation</Description>
+						<Description>- The ID of the transformed object.</Description>
 					</Argument>
 				</Arguments>
 			</Event>
@@ -153,6 +158,10 @@
 			</Property>
 			<Property name="sceneFilePath" type="String" initOnly="false" localizable="false" editableBinding="false" readOnly="false" required="false" projectable="true" category="Behavior" defaultValue="">
 				<Description>Path to the scene file to be loaded.</Description>
+			</Property>
+			<Property name="sceneLoaded" type="Boolean" initOnly="false" localizable="false" editableBinding="false" readOnly="true" required="false" projectable="false" category="Behavior" defaultValue="false">
+				<Description>Boolean value to indicate if the scene is loaded.
+This is a read-only property.				</Description>
 			</Property>
 			<Property name="style" type="StyleReference" initOnly="false" localizable="false" editableBinding="false" readOnly="false" required="false" projectable="true" category="Appearance" defaultValue="default">
 				<Description>reference to a style for this widget type</Description>
