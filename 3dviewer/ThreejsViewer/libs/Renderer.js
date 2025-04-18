@@ -4,6 +4,8 @@ define([
     "widgets/3dviewer/common/libs/OrbitControls.amd.min"
 ], function (brease, THREE, OrbitControls) {
 
+    "use strict";
+
     /**
      * @class widgets.3dviewer.ThreejsViewer.libs.Renderer
      * @extends brease.core.Class

@@ -45,9 +45,16 @@
 			<Method name="Focus" read="false">
 				<Description>Sets focus on the widget element, if it can be focused and keyboardOperation=true</Description>
 			</Method>
+			<Method name="GetSceneLoaded" read="true">
+				<Description>Get the current state of the scene loaded property.</Description>
+				<Result type="Boolean"/>
+			</Method>
 			<Method name="GetTransform" read="true">
 				<Description>Get current transformations for the scene.</Description>
 				<Result type="String"/>
+			</Method>
+			<Method name="PlayScene" read="false">
+				<Description>Start event handling for the scene and dispatch &quot;start&quot; event.</Description>
 			</Method>
 			<Method name="SetEnable" read="false">
 				<Description>Sets the state of property &quot;enable&quot;</Description>
@@ -73,6 +80,9 @@
 				</Arguments>
 			</Method>
 			<Method name="ShowTooltip" read="false"/>
+			<Method name="StopScene" read="false">
+				<Description>Stop event handling for the scene and dispatch &quot;stop&quot; event.</Description>
+			</Method>
 		</Methods>
 		<Events>
 			<Event name="Click">
@@ -119,6 +129,9 @@
 			</Event>
 			<Event name="FocusOut">
 				<Description>Fired when the widgets lost focus</Description>
+			</Event>
+			<Event name="SceneLoaded">
+				<Description>Triggered when the scene is loaded.</Description>
 			</Event>
 			<Event name="TransformDone">
 				<Description>Triggered when the transformation is done.</Description>

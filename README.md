@@ -33,6 +33,7 @@ The widget provides several configuration options that can be set via the mappVi
 | `enableControls`   | `Boolean` | `true`        | Enable or disable camera controls (OrbitControls).                         |
 | `autoPlay`         | `Boolean` | `false`       | Automatically play animations in the scene.                                |
 | `transform`        | `String`  | `'{}'`        | JSON configuration for object transformations with animation support.      |
+| `sceneLoaded`      | `Boolean` | ``            | Read-only bindable property to know when the scene is loaded               |
 
 ### Transformations
 
@@ -81,7 +82,23 @@ Example Transformation
 The widget emits several events that can be used to trigger actions in the mappView environment:
 | Event Name         | Description                                                                 |
 |--------------------|-----------------------------------------------------------------------------|
-| `TransformDone` | Emitted when a transformation is completed.                                 |
+| `TransformDone` | Emitted when a transformation is completed.                                    |
+| `SceneLoaded`    | Emitted when the scene is fully loaded and ready for interaction.             |
+
+## Actions
+
+The widget provides several actions that can be triggered from the mappView environment:
+| Action Name        | Description                                                                 |
+|--------------------|-----------------------------------------------------------------------------|
+| `playScene`        | Start event handling for the scene and dispatch "start" event.              |
+| `stopScene`        | Stop event handling for the scene and dispatch "stop" event.                |
+ 
+
+ ## Read actions
+| Action Name        | Type      | Description                                                                 |
+|--------------------|-----------|-----------------------------------------------------------------------------|
+| `GetSceneLoaded`   | `Boolean` | Returns the value of the `sceneLoaded` property.                            |
+| `GetTransform`     | `String`  | Returns the current transformation configuration.                           |
 
 
 ## Notes

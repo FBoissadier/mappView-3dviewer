@@ -192,6 +192,7 @@ define([
 
     /**
      * @method getSceneLoaded
+     * @iatStudioExposed
      * Get the current state of the scene loaded property.
      * @return {Boolean} - The current state of the scene loaded property.
      */
@@ -228,6 +229,40 @@ define([
             id: id,
         });
     };
+    
+    /**
+     * @method _fireSceneLoaded
+     * @private
+     * This method is called when the scene is loaded.
+     * It triggers the SceneLoaded event.
+     **/
+    p._fireSceneLoaded = function() {
+        /**
+         * @event SceneLoaded
+         * @iatStudioExposed
+         * Triggered when the scene is loaded.
+         */
+        this.dispatchServerEvent("SceneLoaded", {});
+    }
+
+    /**
+     * @method playScene
+     * Start event handling for the scene and dispatch "start" event.
+     * @iatStudioExposed
+     */
+    p.playScene = function () {
+        this._controller.play();
+    };
+
+    /**
+     * @method stopScene
+     * Stop event handling for the scene and dispatch "stop" event.
+     * @iatStudioExposed
+     */
+    p.stopScene = function () {
+        this._controller.stop();
+    }
+    
 
     // ========================================================================
     // WIDGET REGISTRATION

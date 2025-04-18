@@ -1,5 +1,7 @@
 define(["brease"], function (brease) {
 
+    "use strict";
+
     /**
      * @class widgets.3dviewer.ThreejsViewer.libs.Utils
      * @extends brease.core.Class

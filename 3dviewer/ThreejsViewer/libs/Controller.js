@@ -2,6 +2,9 @@ define(["brease", "widgets/3dviewer/common/libs/three.amd.min"], function (
     brease,
     THREE
 ) {
+
+    "use strict";
+    
     /**
      * @class widgets.3dviewer.ThreejsViewer.libs.Controller
      * @extends brease.core.Class
@@ -225,12 +228,10 @@ define(["brease", "widgets/3dviewer/common/libs/three.amd.min"], function (
         const time = performance.now();
 
         try {
-            if (this.widget._playing) {
-                this._dispatchEvent("update", {
-                    time: time - this.widget._startTime,
-                    delta: time - this.widget._prevTime,
-                });
-            }
+            this._dispatchEvent("update", {
+                time: time - this.widget._startTime,
+                delta: time - this.widget._prevTime,
+            });
         } catch (e) {
             console.error("Error in animation loop:", e);
         }

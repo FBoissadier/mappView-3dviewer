@@ -3,6 +3,9 @@ define([
     "widgets/3dviewer/common/libs/three.amd.min",
     "widgets/3dviewer/FileManager/FileManager",
 ], function (brease, THREE, FileManager) {
+
+    "use strict";
+    
     /**
      * @class widgets.3dviewer.ThreejsViewer.libs.Model
      * @extends brease.core.Class
@@ -49,20 +52,20 @@ define([
 
         this.widget._renderer.init();
 
-        // Start animation loop
-        if (this.widget.settings.autoPlay) {
-            this.widget._controller.play();
-        } else {
-            this.widget._controller.animate();
-        }
-
         // Load initial scene if path is provided
         if (this.widget.settings.sceneFilePath) {
-            this.loadSceneFromPath(this.widget.settings.sceneFilePath).catch(
-                (error) => {
+            this.loadSceneFromPath(this.widget.settings.sceneFilePath)
+                .catch((error) => {
                     console.error("Error loading initial scene:", error);
-                }
-            );
+                })
+                .then(() => {
+                    // Start animation loop
+                    if (this.widget.settings.autoPlay) {
+                        this.widget._controller.play();
+                    } else {
+                        this.widget._controller.animate();
+                    }
+                });
         }
     };
 
@@ -144,7 +147,10 @@ define([
             ._loadSceneFile(filePath, "LOCK", "TEXT")
             .then((fileData) => {
                 self._unlockSceneFile();
-                self.widget._utils.updateLoadingScreen(0, "Parsing scene file...");
+                self.widget._utils.updateLoadingScreen(
+                    0,
+                    "Parsing scene file..."
+                );
                 const sceneData = JSON.parse(fileData);
                 self.widget._utils.updateLoadingScreen(0, "Load scene file...");
                 self.load(sceneData);
@@ -242,6 +248,7 @@ define([
 
         this.widget._controller._dispatchEvent("init", arguments);
         this.widget.setSceneLoaded(true);
+        this.widget._fireSceneLoaded();
     };
 
     /**

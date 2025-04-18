@@ -4,6 +4,8 @@ define([
     "widgets/3dviewer/ThreejsViewer/libs/config/EditorHandles"
 ], function (brease, THREE, EditorHandles) {
 
+    "use strict";
+    
     /**
      * @class widgets.3dviewer.ThreejsViewer.libs.Editor
      * @extends brease.core.Class

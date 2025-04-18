@@ -34,9 +34,21 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
+	<xs:complexType name="widgets.3dviewer.ThreejsViewer.Action.GetSceneLoaded">
+		<xs:complexContent>
+			<xs:extension base="s1:widgets.3dviewer.ThreejsViewer.ReadAction.widgetMethod">
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
 	<xs:complexType name="widgets.3dviewer.ThreejsViewer.Action.GetTransform">
 		<xs:complexContent>
 			<xs:extension base="s1:widgets.3dviewer.ThreejsViewer.ReadAction.widgetMethod">
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="widgets.3dviewer.ThreejsViewer.Action.PlayScene">
+		<xs:complexContent>
+			<xs:extension base="s1:widgets.3dviewer.ThreejsViewer.Action.widgetMethod">
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -74,6 +86,12 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
+	<xs:complexType name="widgets.3dviewer.ThreejsViewer.Action.StopScene">
+		<xs:complexContent>
+			<xs:extension base="s1:widgets.3dviewer.ThreejsViewer.Action.widgetMethod">
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
 	<xs:complexType name="widgets.3dviewer.ThreejsViewer.Event">
 		<xs:complexContent>
 			<xs:extension base="s1:Source.BaseWidget">
@@ -88,6 +106,7 @@
 			<xs:enumeration value="EnableChanged"></xs:enumeration>
 			<xs:enumeration value="FocusIn"></xs:enumeration>
 			<xs:enumeration value="FocusOut"></xs:enumeration>
+			<xs:enumeration value="SceneLoaded"></xs:enumeration>
 			<xs:enumeration value="TransformDone"></xs:enumeration>
 			<xs:enumeration value="VisibleChanged"></xs:enumeration>
 		</xs:restriction>
