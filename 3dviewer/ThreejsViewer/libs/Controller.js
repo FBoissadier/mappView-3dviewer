@@ -74,7 +74,7 @@ define(["brease", "widgets/3dviewer/common/libs/three.amd.min"], function (
 
                     var functions = scriptFunction.call(
                         object,
-                        this.widget,
+                        this.widget._model,
                         this.widget._renderer._renderer,
                         this.widget._model._scene,
                         this.widget._model._camera

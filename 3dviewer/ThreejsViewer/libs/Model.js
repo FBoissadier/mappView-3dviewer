@@ -25,10 +25,12 @@ define([
     const p = Model.prototype;
 
     /**
-     * @method initThreeJs
-     * Initialize Three.js scene and camera
+     * @method init
+     * Initialize the model and scene
+     * @private
+     * @returns {void}
      */
-    p.initThreeJs = function () {
+    p.init = function () {
         this._loader = new THREE.ObjectLoader();
         this._scene = new THREE.Scene();
         this.widget._startTime = this.widget._prevTime = performance.now();
@@ -41,6 +43,15 @@ define([
             1000
         );
         this._camera.position.z = 5;
+
+    };
+
+    /**
+     * @method initThreeJs
+     * Initialize Three.js scene and camera
+     */
+    p.initThreeJs = function () {
+        this.init();
 
         this.fileManager = FileManager.createWidget(this.widget.elem.id);
         this.fileManager.onChunk(this.widget.elem.id, (chunk) => {

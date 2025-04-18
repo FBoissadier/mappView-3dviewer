@@ -22,23 +22,34 @@ define([
      * Initialize mock Three.js content for editor mode
      */
     p.initMockThreeJs = function() {
-        this.widget._model._scene = new THREE.Scene();
-        this.widget._model._scene.background = new THREE.Color(0x777777);
 
-        this.widget._model._camera = new THREE.PerspectiveCamera(
-            75,
-            this.widget._container.width() / this.widget._container.height(),
-            0.1,
-            1000
-        );
-        this.widget._model._camera.position.z = 5;
-        this._addEditorDemoContent();
+        var self = this;
+
+        // Force autoPlay to true for editor mode
+        this.widget.settings.autoPlay = true;
+        // Force enableScripts to true for editor mode
+        this.widget.settings.enableScripts = true;
+
+
+        this.widget._model.init();
         this.widget._renderer.init();
+
+
+        // Set the scene file path to a mock value for editor mode
+        this.getSampleFile().then((json) => {
+            self.widget._model.load(json);
+        });
+
+        
         if (this.widget.settings.autoPlay === true) {
             this.widget._controller.play();
         }else{
             this.widget._controller.animate();
         }
+    };
+
+    p.getSampleFile = function () {
+        return import(/* webpackMode: "eager" */ `widgets/3dviewer/ThreejsViewer/assets/mock.json`);
     };
 
     /**
