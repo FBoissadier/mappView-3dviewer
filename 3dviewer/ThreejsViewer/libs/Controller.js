@@ -483,5 +483,38 @@ define(["brease", "widgets/3dviewer/common/libs/three.amd.min"], function (
         }
     };
 
+    /**
+     * @method onBeforeSuspend
+     * Handle suspend event
+     * @private
+     */
+    p.onBeforeSuspend = function () {
+        this.stop();
+    };
+
+    /**
+     * @method suspend
+     * Suspend event handling
+     * @private
+     */
+    p.suspend = function () {
+        cancelAnimationFrame(this._animationFrameId);
+    };
+
+    /**
+     * @method wake
+     * Wake up event handling
+     * @private
+     */
+    p.wake = function () {
+        this.play();
+    };
+
+    p.dispose = function () {
+        this.stop();
+        this._events = null;
+        this.widget = null;
+    };
+
     return Controller;
 });

@@ -265,6 +265,63 @@ define([
     
 
     // ========================================================================
+    // WIDGET STATES
+    // ========================================================================
+
+    /**
+     * @method onBeforeSuspend
+     * @private
+     * This method is called before the widget is suspended.
+     * It stops the animation and removes the event listeners.
+     */
+    p.onBeforeSuspend = function () {
+        this._controller.onBeforeSuspend();
+        SuperClass.prototype.onBeforeSuspend.call(this, arguments);
+    };
+
+    /**
+     * @method suspend
+     * @private
+     * This method is called to suspend the widget.
+     * It stops the request animation frame loop.
+     */
+    p.suspend = function () {
+        this._controller.suspend();
+        SuperClass.prototype.suspend.call(this, arguments);
+    }
+
+    /**
+     * @method wake
+     * @private
+     * This method is called to wake the widget.
+     * It starts the request animation frame loop and add eventlisteners.
+     */
+    p.wake= function () {
+        this._controller.wake();
+        SuperClass.prototype.wake.apply(this, arguments);
+    };
+
+    /**
+     * @method dispose
+     * @private
+     * This method is called to dispose the widget.
+     * It removes the event listeners and disposes the components.
+     */
+    p.dispose = function () {
+        this._controller.dispose();
+        this._model = null;
+        this._renderer = null;
+        this._controller = null;
+        this._editor = null;
+        this._utils = null;
+        this._container = null;
+        this.setSceneLoaded(false);
+
+        SuperClass.prototype.dispose.apply(this, arguments);
+    }
+
+
+    // ========================================================================
     // WIDGET REGISTRATION
     // ========================================================================
 
