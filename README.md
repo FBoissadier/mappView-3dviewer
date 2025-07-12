@@ -44,7 +44,7 @@ Transformations allow you to modify the position, rotation, and scale of objects
   {
     "target": "objectName",
     "position": { "x": 1, "y": 2, "z": 3 },
-    "rotation": { "x": 45, "y": 0, "z": 90 },
+    "rotation": { "x": PI/2, "y": 0, "z": PI },
     "scale": { "x": 1.5, "y": 1.5, "z": 1.5 },
     "duration": 2,
     "easing": "easeInOut",
@@ -58,7 +58,7 @@ Transformations allow you to modify the position, rotation, and scale of objects
 
 - `target`: The name of the object to be transformed (required).
 - `position`: The target position of the object (optional).
-- `rotation`: The target rotation of the object in degrees (optional).
+- `rotation`: The target rotation of the object in radians (Euler angles) (optional).
 - `scale`: The target scale of the object (optional).
 - `duration`: The duration of the animation in seconds (optional, default is 0).
 - `easing`: Easing function for the animation (linear, easeIn, easeOut, easeInOut) (optional, default is linear).
