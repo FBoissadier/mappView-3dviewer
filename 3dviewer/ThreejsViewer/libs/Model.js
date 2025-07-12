@@ -28,7 +28,6 @@ define([
      * @method init
      * Initialize the model and scene
      * @private
-     * @returns {void}
      */
     p.init = function () {
         this._loader = new THREE.ObjectLoader();
@@ -43,7 +42,6 @@ define([
             1000
         );
         this._camera.position.z = 5;
-
     };
 
     /**

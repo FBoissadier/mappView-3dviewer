@@ -39,9 +39,7 @@ define(['brease',
      *      }
      * 
      * Known list of widgets using the FileManager (please expand if your widget is going to use it):
-     * -FileExplorer
-     * -TextPad
-     * -MotionPad
+     * -ThreejsViewer
      *
      * @extends brease.core.BaseWidget
      * @singleton

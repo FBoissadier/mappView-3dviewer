@@ -19,6 +19,7 @@
 				<File>widgets.3dviewer.ThreejsViewer.js</File>
 			</Files>
 			<Folders>
+				<Folder>widgets/3dviewer/ThreejsViewer/assets</Folder>
 			</Folders>
 			<Widgets>
 				<Widget>widgets.3dviewer.ThreejsViewer</Widget>
