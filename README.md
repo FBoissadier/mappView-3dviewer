@@ -44,7 +44,7 @@ Transformations allow you to modify the position, rotation, and scale of objects
   {
     "target": "objectName",
     "position": { "x": 1, "y": 2, "z": 3 },
-    "rotation": { "x": PI/2, "y": 0, "z": PI },
+    "rotation": { "x": 1.57, "y": 0, "z": 3.14 },
     "scale": { "x": 1.5, "y": 1.5, "z": 1.5 },
     "duration": 2,
     "easing": "easeInOut",
@@ -69,7 +69,7 @@ Example Transformation
 {
   "target": "Cube",
   "position": { "x": 1, "y": 2, "z": 3 },
-  "rotation": { "x": 45, "y": 0, "z": 90 },
+  "rotation": { "x": 0, "y": 0, "z": 0 },
   "scale": { "x": 1.5, "y": 1.5, "z": 1.5 },
   "duration": 2,
   "easing": "easeInOut",
