@@ -66,15 +66,17 @@ Transformations allow you to modify the position, rotation, and scale of objects
 
 Example Transformation
 ```json
-{
-  "target": "Cube",
-  "position": { "x": 1, "y": 2, "z": 3 },
-  "rotation": { "x": 0, "y": 0, "z": 0 },
-  "scale": { "x": 1.5, "y": 1.5, "z": 1.5 },
-  "duration": 2,
-  "easing": "easeInOut",
-  "immediate": false
-}
+[
+  {
+    "target": "Cube",
+    "position": { "x": 1, "y": 2, "z": 3 },
+    "rotation": { "x": 0, "y": 0, "z": 0 },
+    "scale": { "x": 1.5, "y": 1.5, "z": 1.5 },
+    "duration": 2,
+    "easing": "easeInOut",
+    "immediate": false
+  }
+]
 ```
 
 ## Events
