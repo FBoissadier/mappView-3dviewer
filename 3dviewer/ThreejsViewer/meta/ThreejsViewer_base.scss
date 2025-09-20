@@ -1,7 +1,18 @@
-@import "mixins.scss";
-@mixin widgets_3dviewer_ThreejsViewer_base {
-	@include elemWidth(100);
-	@include elemHeight(30);
+@use "mixins.scss";
+@use "sass:list";
+@use "sass:string";
+@mixin prop_width {
+	@include mixins.elemWidth(100);
+
+}
+@mixin prop_height {
+	@include mixins.elemHeight(30);
+
+}
+
+@mixin base {
+  @include prop_width;
+  @include prop_height;
 
 }
 

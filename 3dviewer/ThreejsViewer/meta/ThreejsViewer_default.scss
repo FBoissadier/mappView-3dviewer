@@ -1,10 +1,4 @@
-@import "mixins.scss";
-@mixin widgets_3dviewer_ThreejsViewer_base {
-	@include elemWidth(100);
-	@include elemHeight(30);
-
-}
-
+@use "ThreejsViewer_base.scss" as widgets_3dviewer_ThreejsViewer;
 .widgets_3dviewer_ThreejsViewer_style_default {
-@include widgets_3dviewer_ThreejsViewer_base
+  @include widgets_3dviewer_ThreejsViewer.base
 }

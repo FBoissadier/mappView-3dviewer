@@ -9,14 +9,17 @@ define([
     "./libs/Model",
     "./libs/Controller",
     "./libs/Editor",
-    "./libs/Utils"
+    "./libs/Utils",
+    "./libs/StructProperties/BindAttribute",
 ], function (
     {
         bodyEl,
         config: breaseConfig,
-        core: { BaseWidget: SuperClass },
+        core: { BaseWidget: SuperClass, Utils },
         events: { BreaseEvent },
         decorators: { ContentActivatedDependency },
+        services: { logger },
+        enum: { Enum },
     },
     THREE,
     OrbitControls,
@@ -26,7 +29,8 @@ define([
     Model,
     Controller,
     Editor,
-    Utils
+    WidgetUtils,
+    BindAttribute
 ) {
     // ========================================================================
     // CLASS DEFINITION AND CONFIGURATION
@@ -95,6 +99,16 @@ define([
      * This is a read-only property.
      */
 
+    /**
+     * @cfg {widgets.3dviewer.StructProp.BindAttribute} bindAttribute={}
+     * @iatStudioExposed
+     * @iatCategory Collections
+     * Defines the binding properties for the scene object transformations.
+     * @iatMeta StructuredProperty:true
+     * @iatMeta minSize:0
+     * @iatMeta maxSize:50
+     */
+
     const defaults_properties = {
         sceneFilePath: "",
         enableScripts: true,
@@ -102,6 +116,7 @@ define([
         autoPlay: false,
         transform: "{}",
         sceneLoaded: false,
+        bindAttribute: {},
     };
 
     const WidgetClass = SuperClass.extend(function ThreejsViewer() {
@@ -119,13 +134,19 @@ define([
      */
     p.init = function () {
         SuperClass.prototype.init.call(this);
-        
+        this.bindAttribute = {};
+
         // Initialize components
         if (!this._renderer) this._renderer = new Renderer(this);
         if (!this._model) this._model = new Model(this);
         if (!this._controller) this._controller = new Controller(this);
         if (!this._editor) this._editor = new Editor(this);
-        this._utils = new Utils(this);
+        this._utils = new WidgetUtils(this);
+
+        // Initialize binding properties
+        for (let rowId in this.settings.bindAttribute) {
+            this._addBindAttribute(rowId, this.settings.bindAttribute[rowId]);
+        }
 
         // Create container for Three.js renderer
         this._container = $("<div></div>");
@@ -165,6 +186,18 @@ define([
      * @param {String} value
      */
     p.setTransform = function (value) {
+        if (!this.getSceneLoaded() && value !== "{}" && value !== "") {
+            brease.services.logger.log(
+                6000,
+                Enum.EventLoggerCustomer.CUSTOMER,
+                Enum.EventLoggerVerboseLevel.OFF,
+                Enum.EventLoggerSeverity.ERROR,
+                [],
+                "Scene not loaded. Cannot set transform. WidgetId: " +
+                    this.elem.id
+            );
+            return;
+        }
         if (!this._controller) this._controller = new Controller(this);
         this._controller.setTransform(value);
     };
@@ -209,7 +242,7 @@ define([
     p._onWindowResize = function () {
         if (!this._renderer) this._renderer = new Renderer(this);
         this._renderer.onWindowResize();
-    }
+    };
 
     /**
      * @method _fireTransformDone
@@ -218,7 +251,7 @@ define([
      * It triggers the TransformDone event.
      * @param {String} id - The ID of the transformed object.
      */
-    p._fireTransformDone = function(id) {
+    p._fireTransformDone = function (id) {
         /**
          * @event TransformDone
          * @iatStudioExposed
@@ -229,21 +262,21 @@ define([
             id: id,
         });
     };
-    
+
     /**
      * @method _fireSceneLoaded
      * @private
      * This method is called when the scene is loaded.
      * It triggers the SceneLoaded event.
      **/
-    p._fireSceneLoaded = function() {
+    p._fireSceneLoaded = function () {
         /**
          * @event SceneLoaded
          * @iatStudioExposed
          * Triggered when the scene is loaded.
          */
         this.dispatchServerEvent("SceneLoaded", {});
-    }
+    };
 
     /**
      * @method playScene
@@ -261,8 +294,69 @@ define([
      */
     p.stopScene = function () {
         this._controller.stop();
-    }
-    
+    };
+
+    /**
+     * @method setBindAttribute
+     * Set property value of single bind attribute
+     * @param {String} path
+     * @param {String} attribute
+     * @param {Object} value
+     */
+    p.setBindAttribute = function (path, attribute, value) {
+        if (this.bindAttribute[path]) {
+            this.bindAttribute[path][Utils.setter(attribute)](value);
+        }
+    };
+
+    /**
+     * @method getBindAttribute
+     * Get property value of single bind attribute
+     */
+    p.getBindAttribute = function (path, attribute) {
+        if (this.bindAttribute[path]) {
+            return this.bindAttribute[path][Utils.getter(attribute)]();
+        } else {
+            return null;
+        }
+    };
+
+    /**
+     * @method addBindAttribute
+     * Add a new bind attribute
+     */
+    p.addBindAttribute = function (rowId, options) {
+        this._addBindAttribute(rowId, options);
+    };
+
+    p._addBindAttribute = function (rowId, options) {
+        if (!this.settings.bindAttribute[rowId]) {
+            this.settings.bindAttribute[rowId] = options;
+        }
+        this.bindAttribute[rowId] = new BindAttribute(rowId, options, this.elem.id, 'bindAttribute', this);
+    };
+
+    /**
+     * @method deleteBindAttribute
+     * Delete a bind attribute
+     */
+    p.deleteBindAttribute = function (rowId) {
+        this.bindAttribute[rowId].dispose();
+        delete this.bindAttribute[rowId];
+        delete this.settings.bindAttribute[rowId];
+    };
+
+    p.renameBindAttribute = function (id, newId) {
+        this._renameStructProp("bindAttribute", id, newId);
+    };
+
+    p._renameStructProp = function (prop, id, newId) {
+        this[prop][id].setId(newId);
+        this[prop][newId] = this[prop][id];
+        delete this[prop][id];
+        this.settings[prop][newId] = this.settings[prop][id];
+        delete this.settings[prop][id];
+    };
 
     // ========================================================================
     // WIDGET STATES
@@ -288,7 +382,7 @@ define([
     p.suspend = function () {
         this._controller.suspend();
         SuperClass.prototype.suspend.call(this, arguments);
-    }
+    };
 
     /**
      * @method wake
@@ -296,7 +390,7 @@ define([
      * This method is called to wake the widget.
      * It starts the request animation frame loop and add eventlisteners.
      */
-    p.wake= function () {
+    p.wake = function () {
         this._controller.wake();
         SuperClass.prototype.wake.apply(this, arguments);
     };
@@ -318,19 +412,7 @@ define([
         this.setSceneLoaded(false);
 
         SuperClass.prototype.dispose.apply(this, arguments);
-    }
-
-
-    // ========================================================================
-    // WIDGET REGISTRATION
-    // ========================================================================
-
-    if (window.lib_br?.controller?.widgetRegistry) {
-        lib_br.controller.widgetRegistry.define(
-            "widgets.3dviewer.ThreejsViewer",
-            WidgetClass
-        );
-    }
+    };
 
     return WidgetClass;
 });

@@ -4,12 +4,10 @@ This repository contains the `ThreejsViewer` widget, a 3D viewer for mappView fr
 
 This widget uses the `mpFileManager` to load the 3D scene files. Please make sur to declare in the configuration the `mpFileManager`. Also make sure to have libarries `MpFile` and `MpServer` for the `mpFileManager` to work.
 
-## Tested versions
-- **Automation Studio**: `V6.1.1.14`
-- **mappView**: `V6.1.1`
-- **mappService**: `V6.1.0`
-- **OPC UA C/S**: `V6.0.0`
-- **Automation Runtime**: `V6.1.0`
+## Minimum versions
+- **Automation Studio**: `V6.3.3.14`
+- **mappView**: `V6.4.0`
+- **mappService**: `V6.4.0`
 
 ## Features
 
@@ -19,6 +17,7 @@ This widget uses the `mpFileManager` to load the 3D scene files. Please make sur
 - **Interactive Controls**: Enable or disable camera controls (OrbitControls) for navigating the scene.
 - **Auto-Play Animations**: Automatically play animations defined in the scene.
 - **Responsive Design**: Automatically adjusts to the widget's container size.
+- **Bind Attribute**: Struct to bind attributes from the scene to opcua variable properties
 
 ## Configuration Options
 
@@ -34,6 +33,17 @@ The widget provides several configuration options that can be set via the mappVi
 | `autoPlay`         | `Boolean` | `false`       | Automatically play animations in the scene.                                |
 | `transform`        | `String`  | `'{}'`        | JSON configuration for object transformations with animation support.      |
 | `sceneLoaded`      | `Boolean` | ``            | Read-only bindable property to know when the scene is loaded               |
+| `bindAttribute`    | `Struct`  | `{}`          | Struct to bind attributes from the scene to opcua variable properties max 50 |
+
+### bindAttribute Struct
+
+The `bindAttribute` struct allows you to bind specific attributes of objects in the 3D scene to OPC UA variable properties. This enables real-time synchronization between the 3D scene and your OPC UA server.
+
+| Field Name        | Type      | Description                                                                 |
+|-------------------|-----------|-----------------------------------------------------------------------------|
+| `componentName`   | `String`  | The name of the object in the 3D scene to bind.                             |
+| `attributeName`   | `String`  | The attribute of the object to bind (posX, posY, posZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ, visible) |
+| `value`           | `String`  | Bind the opcua variable property to the attribute of the object             |
 
 ### Transformations
 

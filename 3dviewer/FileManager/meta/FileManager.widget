@@ -10,8 +10,7 @@
 				<File>brease.js</File>
 				<File>widgets/3dviewer/common/MpLinkHandler/libs/MpLinkHandler.js</File>
 			</Files>
-			<Folders>
-			</Folders>
+			<Folders></Folders>
 			<Widgets>
 				<Widget>widgets.3dviewer.FileManager</Widget>
 			</Widgets>
@@ -27,8 +26,7 @@
 		<Parents>
 			<Parent>*</Parent>
 		</Parents>
-		<Children>
-		</Children>
+		<Children></Children>
 		<Methods>
 			<Method name="Focus" read="false">
 				<Description>Sets focus on the widget element, if it can be focused and keyboardOperation=true</Description>

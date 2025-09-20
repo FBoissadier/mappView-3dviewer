@@ -1,5 +1,8 @@
-@import "mixins.scss";
-@mixin widgets_3dviewer_FileManager_base {
+@use "mixins.scss";
+@use "sass:list";
+@use "sass:string";
+
+@mixin base {
 
 }
 

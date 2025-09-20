@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<StructuredProperty type="widgets.opcuacviewer.OpcUacBrowser.BindAttribute" xmlns="http://www.br-automation.com/iat2014/widget">
+  <StyleProperties>
+    <StyleProperty name="backColor" category="Appearance" type="Color" default="#FF0000">
+      <StyleElement selector="label" attribute="color"/>
+      <Description>Color of the row description</Description>
+    </StyleProperty>
+  </StyleProperties>
+</StructuredProperty>

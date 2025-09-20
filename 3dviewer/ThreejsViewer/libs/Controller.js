@@ -2,9 +2,8 @@ define(["brease", "widgets/3dviewer/common/libs/three.amd.min"], function (
     brease,
     THREE
 ) {
-
     "use strict";
-    
+
     /**
      * @class widgets.3dviewer.ThreejsViewer.libs.Controller
      * @extends brease.core.Class
@@ -57,7 +56,7 @@ define(["brease", "widgets/3dviewer/common/libs/three.amd.min"], function (
             );
 
             if (object === undefined) {
-                console.warn("ThreejsViewer: Script without object.", uuid);
+                console.iatWarn("ThreejsViewer: Script without object.", uuid);
                 continue;
             }
 
@@ -84,7 +83,7 @@ define(["brease", "widgets/3dviewer/common/libs/three.amd.min"], function (
                         if (functions[name] === undefined) continue;
 
                         if (this._events[name] === undefined) {
-                            console.warn(
+                            console.iatWarn(
                                 "ThreejsViewer: Event type not supported (",
                                 name,
                                 ")"
@@ -95,7 +94,7 @@ define(["brease", "widgets/3dviewer/common/libs/three.amd.min"], function (
                         this._events[name].push(functions[name].bind(object));
                     }
                 } catch (e) {
-                    console.error("Error processing script:", e);
+                    console.iatWarn("Error processing script:", e);
                 }
             }
         }
@@ -118,7 +117,7 @@ define(["brease", "widgets/3dviewer/common/libs/three.amd.min"], function (
             try {
                 handlers[i](args);
             } catch (e) {
-                console.error(`Error in ${type} event handler:`, e);
+                console.iatWarn(`Error in ${type} event handler:`, e);
             }
         }
     };
@@ -222,9 +221,7 @@ define(["brease", "widgets/3dviewer/common/libs/three.amd.min"], function (
      * Animation loop
      */
     p.animate = function () {
-        this._animationFrameId = requestAnimationFrame(
-            this.animate.bind(this)
-        );
+        this._animationFrameId = requestAnimationFrame(this.animate.bind(this));
         const time = performance.now();
 
         try {
@@ -233,7 +230,7 @@ define(["brease", "widgets/3dviewer/common/libs/three.amd.min"], function (
                 delta: time - this.widget._prevTime,
             });
         } catch (e) {
-            console.error("Error in animation loop:", e);
+            console.iatWarn("Error in animation loop:", e);
         }
 
         if (brease.config.editMode) this.widget._editor.rotateCube();
@@ -283,7 +280,18 @@ define(["brease", "widgets/3dviewer/common/libs/three.amd.min"], function (
             this._queueTransforms(transforms);
             this._processTransformQueue();
         } catch (e) {
-            console.error("Error parsing transform JSON:", e);
+            brease.services.logger.log(
+                6001,
+                brease.enum.Enum.EventLoggerCustomer.CUSTOMER,
+                brease.enum.Enum.EventLoggerVerboseLevel.OFF,
+                brease.enum.Enum.EventLoggerSeverity.ERROR,
+                [],
+                "Error parsing transform JSON: " +
+                    e +
+                    ". WidgetId: " +
+                    this.widget.elem.id
+            );
+            // console.iatWarn("Error parsing transform JSON:", e);
         }
     };
 
@@ -312,7 +320,7 @@ define(["brease", "widgets/3dviewer/common/libs/three.amd.min"], function (
             const targets = this._getTransformTargets(transform.target);
 
             if (!targets || targets.length === 0) {
-                console.warn(
+                console.iatWarn(
                     `Transform target(s) not found: ${transform.target}`
                 );
                 return;
@@ -343,7 +351,12 @@ define(["brease", "widgets/3dviewer/common/libs/three.amd.min"], function (
         if (!targetNames) return [];
 
         // Single name
-        return this.widget._model._scene.getObjectsByProperty("name", targetNames) || [];
+        return (
+            this.widget._model._scene.getObjectsByProperty(
+                "name",
+                targetNames
+            ) || []
+        );
     };
 
     /**
@@ -376,6 +389,10 @@ define(["brease", "widgets/3dviewer/common/libs/three.amd.min"], function (
                 transform.scale.y ?? target.scale.y,
                 transform.scale.z ?? target.scale.z
             );
+        }
+
+        if (transform.visible !== undefined) {
+            target.visible = transform.visible;
         }
     };
 

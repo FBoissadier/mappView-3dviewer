@@ -3,17 +3,24 @@
 <xs:complexType name="widgets.3dviewer.FileManagerRestrict" abstract="true">
 	<xs:complexContent>
 		<xs:restriction base="iat:brease.core.BaseWidget">
+			
 			<xs:attribute name="tabIndex" use="optional" type="types:Integer" default="-1" />
+			
 			<xs:attribute name="left" use="prohibited" type="types:Integer" />
+			
 			<xs:attribute name="top" use="prohibited" type="types:Integer" />
+			
 			<xs:attribute name="height" use="prohibited" type="types:Size" />
+			
 			<xs:attribute name="width" use="prohibited" type="types:Size" />
+			
 		</xs:restriction>
 	</xs:complexContent>
 </xs:complexType>
 <xs:complexType name="widgets.3dviewer.FileManager">
 	<xs:complexContent>
 		<xs:extension base="iat:widgets.3dviewer.FileManagerRestrict">
+			
 		</xs:extension>
 	</xs:complexContent>
 </xs:complexType>

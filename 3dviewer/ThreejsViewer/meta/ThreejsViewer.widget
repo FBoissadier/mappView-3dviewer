@@ -16,7 +16,7 @@
 				<File>./libs/Controller.js</File>
 				<File>./libs/Editor.js</File>
 				<File>./libs/Utils.js</File>
-				<File>widgets.3dviewer.ThreejsViewer.js</File>
+				<File>./libs/StructProperties/BindAttribute.js</File>
 			</Files>
 			<Folders>
 				<Folder>widgets/3dviewer/ThreejsViewer/assets</Folder>
@@ -40,8 +40,7 @@
 		<Parents>
 			<Parent>*</Parent>
 		</Parents>
-		<Children>
-		</Children>
+		<Children></Children>
 		<Methods>
 			<Method name="Focus" read="false">
 				<Description>Sets focus on the widget element, if it can be focused and keyboardOperation=true</Description>
@@ -194,6 +193,28 @@ or if autofocus should be disabled (-1)				</Description>
 				<Description>change visibility</Description>
 			</Property>
 		</Properties>
+		<StructuredProperties>
+			<StructuredProperty name="bindAttribute" category="Collections" type="widgets.3dviewer.StructProp.BindAttribute" maxSize="50" minSize="0">
+				<Description>Defines the binding properties for the scene object transformations.</Description>
+				<Properties>
+					<Property name="attributeName" type="String" initOnly="true" localizable="false" editableBinding="false" readOnly="false" required="false" projectable="true" category="Behaviour" defaultValue="">
+						<Description>Defines the attribute name of the row, can be (posX, posY, posZ, rotX, rotY, rotZ, scaleX, scaleY, scaleZ, visible).</Description>
+					</Property>
+					<Property name="componentName" type="String" initOnly="true" localizable="false" editableBinding="false" readOnly="false" required="false" projectable="true" category="Behaviour" defaultValue="">
+						<Description>Defines the name of the 3d object in the scene that is being represented.</Description>
+					</Property>
+					<Property name="value" type="Number" initOnly="false" localizable="false" editableBinding="false" readOnly="false" required="false" projectable="false" category="Data" defaultValue="0">
+						<Description>Value of the transformation attribute.</Description>
+					</Property>
+				</Properties>
+				<StyleProperties>
+					<StyleProperty name="backColor" category="Appearance" type="Color" default="#FF0000">
+						<StyleElement selector="label" attribute="color"/>
+						<Description>Color of the row description</Description>
+					</StyleProperty>
+				</StyleProperties>
+			</StructuredProperty>
+		</StructuredProperties>
 		<StyleProperties>
 			<StyleProperty name="width" type="Size" not_styleable="true" owner="widgets.3dviewer.ThreejsViewer" category="Layout" groupRefId="Size" groupOrder="1" default="100">
 				<StyleElement attribute="@include elemWidth($value)"/>
@@ -204,11 +225,11 @@ or if autofocus should be disabled (-1)				</Description>
 				<Description>outer height of widget</Description>
 			</StyleProperty>
 			<StyleProperty name="top" type="Integer" not_styleable="true" owner="brease.core.BaseWidget" category="Layout" groupRefId="Position" groupOrder="1">
-				<StyleElement attribute="@include elemTop($value)"/>
+				<StyleElement attribute="@include mixins.elemTop($value)"/>
 				<Description>absolute position measured from top boundary of parent container</Description>
 			</StyleProperty>
 			<StyleProperty name="left" type="Integer" not_styleable="true" owner="brease.core.BaseWidget" category="Layout" groupRefId="Position" groupOrder="2">
-				<StyleElement attribute="@include elemLeft($value)"/>
+				<StyleElement attribute="@include mixins.elemLeft($value)"/>
 				<Description>absolute position measured from left boundary of parent container</Description>
 			</StyleProperty>
 			<StyleProperty name="zIndex" type="UInteger" not_styleable="true" owner="brease.core.BaseWidget" category="Layout" required="true">

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Mappings>
-  <Mapping parameter="widgets.3dviewer.FileManager.Action.SetEnable.value" type="BOOL"/>
-  <Mapping parameter="widgets.3dviewer.FileManager.Action.SetStyle.value" type="ANY_STRING"/>
-  <Mapping parameter="widgets.3dviewer.FileManager.Action.SetVisible.value" type="BOOL"/>
-  <Mapping parameter="widgets.3dviewer.ThreejsViewer.Action.SetEnable.value" type="BOOL"/>
-  <Mapping parameter="widgets.3dviewer.ThreejsViewer.Action.SetStyle.value" type="ANY_STRING"/>
-  <Mapping parameter="widgets.3dviewer.ThreejsViewer.Action.SetTransform.value" type="ANY_STRING"/>
-  <Mapping parameter="widgets.3dviewer.ThreejsViewer.Action.SetVisible.value" type="BOOL"/>
+  <Mapping parameter="widgets.3dviewer.FileManager.Action.SetEnable.value" type="BOOL" oType="Boolean" index="0"/>
+  <Mapping parameter="widgets.3dviewer.FileManager.Action.SetStyle.value" type="ANY_STRING" oType="StyleReference" index="0"/>
+  <Mapping parameter="widgets.3dviewer.FileManager.Action.SetVisible.value" type="BOOL" oType="Boolean" index="0"/>
+  <Mapping parameter="widgets.3dviewer.ThreejsViewer.Action.SetEnable.value" type="BOOL" oType="Boolean" index="0"/>
+  <Mapping parameter="widgets.3dviewer.ThreejsViewer.Action.SetStyle.value" type="ANY_STRING" oType="StyleReference" index="0"/>
+  <Mapping parameter="widgets.3dviewer.ThreejsViewer.Action.SetTransform.value" type="ANY_STRING" oType="String" index="0"/>
+  <Mapping parameter="widgets.3dviewer.ThreejsViewer.Action.SetVisible.value" type="BOOL" oType="Boolean" index="0"/>
 </Mappings>
