@@ -61,7 +61,9 @@ Transformations allow you to modify the position, rotation, and scale of objects
     "immediate": false
   },
   {
-    // Another transformation object
+    "target": "objectName",
+    "visible": false,
+    "immediate": true
   }
 ]
 ```
@@ -73,6 +75,7 @@ Transformations allow you to modify the position, rotation, and scale of objects
 - `duration`: The duration of the animation in seconds (optional, default is 0).
 - `easing`: Easing function for the animation (linear, easeIn, easeOut, easeInOut) (optional, default is linear).
 - `immediate`: If true, the transformation is applied immediately without animation (optional, default is false).
+- `visible` : Change visibility of the target (optional), only works if `immediate` is set to `true`
 
 Example Transformation
 ```json
@@ -85,6 +88,11 @@ Example Transformation
     "duration": 2,
     "easing": "easeInOut",
     "immediate": false
+  },
+  {
+    "target": "Cube",
+    "visible": false,
+    "immediate": true
   }
 ]
 ```
