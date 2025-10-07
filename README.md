@@ -73,6 +73,7 @@ Transformations allow you to modify the position, rotation, and scale of objects
 - `rotation`: The target rotation of the object in radians (Euler angles) (optional).
 - `scale`: The target scale of the object (optional).
 - `duration`: The duration of the animation in seconds (optional, default is 0).
+- `color`: The target color of the object in an array of 3 USINT (0-255) (optional), only works on target that already has a material.
 - `easing`: Easing function for the animation (linear, easeIn, easeOut, easeInOut) (optional, default is linear).
 - `immediate`: If true, the transformation is applied immediately without animation (optional, default is false).
 - `visible` : Change visibility of the target (optional), only works if `immediate` is set to `true`
@@ -91,6 +92,7 @@ Example Transformation
   },
   {
     "target": "Cube",
+    "color": [255, 0, 0],
     "visible": false,
     "immediate": true
   }

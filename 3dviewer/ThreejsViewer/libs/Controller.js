@@ -329,9 +329,7 @@ define(["brease", "widgets/3dviewer/common/libs/three.amd.min"], function (
             targets.forEach((target) => {
                 if (transform.immediate) {
                     this._applyImmediateTransform(target, transform);
-                }
-
-                if (transform.duration > 0) {
+                } else if (transform.duration > 0) {
                     this._queueAnimation(target, transform);
                 }
             });
@@ -393,6 +391,28 @@ define(["brease", "widgets/3dviewer/common/libs/three.amd.min"], function (
 
         if (transform.visible !== undefined) {
             target.visible = transform.visible;
+        }
+
+        if (transform.color && target.material) {
+            if (Array.isArray(target.material)) {
+                target.material.forEach((mat) => {
+                    if (mat.color && transform.color) {
+                        mat.color.set(transform.color[0], transform.color[1], transform.color[2]);
+                    }
+                });
+            } else if (target.material.color && transform.color) {
+                target.material.color.set(transform.color[0], transform.color[1], transform.color[2]);
+            }
+        } else if (target.material === undefined && transform.color) {
+            brease.services.logger.log(
+                6002,
+                brease.enum.Enum.EventLoggerCustomer.CUSTOMER,
+                brease.enum.Enum.EventLoggerVerboseLevel.OFF,
+                brease.enum.Enum.EventLoggerSeverity.WARNING,
+                [],
+                "Target material is undefined. Color transform ignored. WidgetId: " +
+                    this.widget.elem.id
+            );
         }
     };
 
