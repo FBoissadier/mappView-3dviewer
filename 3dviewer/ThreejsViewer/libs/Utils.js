@@ -119,5 +119,50 @@ define(["brease"], function (brease) {
         }
     };
 
+    /**
+     * @method showError
+     * Display error message on the loading screen
+     * @param {String} errorMessage - The error message to display
+     * @param {String} errorDetails - Optional detailed error information
+     */
+    p.showError = function(errorMessage, errorDetails) {
+        if (this._loadingScreen) {
+            // Hide spinner and progress bar
+            this._loadingScreen.find(".loading-spinner").hide();
+            this._loadingScreen.find(".loading-progress").hide();
+
+            // Update loading screen with error styling
+            this._loadingScreen.css({
+                backgroundColor: "rgba(169, 68, 66, 0.9)",
+            });
+
+            // Update text with error message
+            this._loadingScreen.find(".loading-text")
+                .text(errorMessage)
+                .css({
+                    color: "#ffcccc",
+                    fontSize: "20px",
+                });
+
+            // Add error details if provided
+            if (errorDetails) {
+                if (!this._loadingScreen.find(".error-details").length) {
+                    this._loadingScreen.append(`
+                        <div class="error-details"></div>
+                    `);
+                    this._loadingScreen.find(".error-details").css({
+                        fontSize: "14px",
+                        color: "#ffffff",
+                        marginTop: "10px",
+                        maxWidth: "80%",
+                        textAlign: "center",
+                        wordWrap: "break-word",
+                    });
+                }
+                this._loadingScreen.find(".error-details").text(errorDetails);
+            }
+        }
+    };
+
     return Utils;
 });

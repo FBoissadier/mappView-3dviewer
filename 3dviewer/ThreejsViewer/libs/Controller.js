@@ -231,6 +231,14 @@ define(["brease", "widgets/3dviewer/common/libs/three.amd.min"], function (
             });
         } catch (e) {
             console.iatWarn("Error in animation loop:", e);
+            brease.services.logger.log(
+                6004,
+                brease.enum.Enum.EventLoggerCustomer.CUSTOMER,
+                brease.enum.Enum.EventLoggerVerboseLevel.OFF,
+                brease.enum.Enum.EventLoggerSeverity.WARNING,
+                [],
+                "Error in animation loop: \"" + e + "\". WidgetId: " + this.widget.elem.id
+            );
         }
 
         if (brease.config.editMode) this.widget._editor.rotateCube();
@@ -320,8 +328,13 @@ define(["brease", "widgets/3dviewer/common/libs/three.amd.min"], function (
             const targets = this._getTransformTargets(transform.target);
 
             if (!targets || targets.length === 0) {
-                console.iatWarn(
-                    `Transform target(s) not found: ${transform.target}`
+                brease.services.logger.log(
+                    6003,
+                    brease.enum.Enum.EventLoggerCustomer.CUSTOMER,
+                    brease.enum.Enum.EventLoggerVerboseLevel.OFF,
+                    brease.enum.Enum.EventLoggerSeverity.WARNING,
+                    [],
+                    "Transform target(s) not found: \"" + transform.target + "\". WidgetId: " + this.widget.elem.id
                 );
                 return;
             }

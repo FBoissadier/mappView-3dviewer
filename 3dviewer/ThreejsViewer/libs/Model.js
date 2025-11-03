@@ -115,8 +115,11 @@ define([
             .browse(self.widget.elem.id, folderPath, "FILES")
             .then((browseInfo) => self._handleFileInfo(browseInfo, filePath))
             .then((fileInfo) => self._processSceneFile(fileInfo, filePath))
-            .finally(() => {
+            .then(() => {
                 self.widget._utils.hideLoadingScreen();
+                self.widget._loading = false;
+            })
+            .catch((error) => {
                 self.widget._loading = false;
             });
     };
@@ -132,7 +135,17 @@ define([
         const self = this;
         const fileInfo = browseInfo.find((file) => file.Path === filePath);
         if (!fileInfo) {
-            throw new Error(`File not found: ${filePath}`);
+            brease.services.logger.log(
+                6005,
+                brease.enum.Enum.EventLoggerCustomer.CUSTOMER,
+                brease.enum.Enum.EventLoggerVerboseLevel.OFF,
+                brease.enum.Enum.EventLoggerSeverity.ERROR,
+                [],
+                "Filepath not found \""+ filePath +"\". WidgetId: " +
+                self.widget.elem.id
+            );
+            self.widget._utils.showError("ERROR: Scene file not found", "\"" + filePath + "\" is not found or path is incorrect."); 
+            throw new Error("Filepath not found: " + filePath);
         }
 
         self.fileSize = fileInfo.Size;
