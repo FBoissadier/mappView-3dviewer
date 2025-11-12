@@ -124,7 +124,7 @@ The widget provides several actions that can be triggered from the mappView envi
 
 
 ## Notes
-- Ensure the 3D scene file is exported from the [Three.js Editor](https://threejs.org/editor/).
+- Ensure the 3D scene file is exported using "File" then "Save" from the [Three.js Editor](https://threejs.org/editor/).
 - Scripts embedded in the scene must be compatible with the widget's scripting engine.
 - The widget requires a modern browser with WebGL support.
 
