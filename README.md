@@ -25,15 +25,15 @@ The widget provides several configuration options that can be set via the mappVi
 
 ### Properties
 
-| Property           | Type      | Default Value | Description                                                                |
-|--------------------|-----------|---------------|----------------------------------------------------------------------------|
-| `sceneFilePath`    | `String`  | `''`          | Path to the scene file to be loaded (default is app.json).                 |
-| `enableScripts`    | `Boolean` | `true`        | Enable or disable the execution of scripts embedded in the scene.          |
-| `enableControls`   | `Boolean` | `true`        | Enable or disable camera controls (OrbitControls).                         |
-| `autoPlay`         | `Boolean` | `false`       | Automatically play animations in the scene.                                |
-| `transform`        | `String`  | `'{}'`        | JSON configuration for object transformations with animation support.      |
-| `sceneLoaded`      | `Boolean` | ``            | Read-only bindable property to know when the scene is loaded               |
-| `bindAttribute`    | `Struct`  | `{}`          | Struct to bind attributes from the scene to opcua variable properties max 50 |
+| Property           | Type      | Default Value | Description                                                                                          |
+|--------------------|-----------|---------------|------------------------------------------------------------------------------------------------------|
+| `sceneFilePath`    | `String`  | `''`          | Path to the scene file to be loaded (must be exported from ThreeJs editor using "File" then "Save"). |
+| `enableScripts`    | `Boolean` | `true`        | Enable or disable the execution of scripts embedded in the scene.                                    |
+| `enableControls`   | `Boolean` | `true`        | Enable or disable camera controls (OrbitControls).                                                   |
+| `autoPlay`         | `Boolean` | `false`       | Automatically play animations in the scene.                                                          |
+| `transform`        | `String`  | `'{}'`        | JSON configuration for object transformations with animation support.                                |
+| `sceneLoaded`      | `Boolean` | ``            | Read-only bindable property to know when the scene is loaded                                         |
+| `bindAttribute`    | `Struct`  | `{}`          | Struct to bind attributes from the scene to opcua variable properties max 50                         |
 
 ### bindAttribute Struct
 
