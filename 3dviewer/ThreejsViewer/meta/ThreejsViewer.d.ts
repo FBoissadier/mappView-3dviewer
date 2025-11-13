@@ -21,6 +21,11 @@ interface widgets_3dviewer_ThreejsViewer{
         playScene(): void;
 
         /**
+        * Play a specific script by name from the Three.js editor scene.
+        */
+        playScript(scriptName: string): void;
+
+        /**
         * Sets the state of property "enable"
         */
         setEnable(value: boolean): void;
@@ -48,7 +53,12 @@ interface widgets_3dviewer_ThreejsViewer{
         /**
         * Stop event handling for the scene and dispatch "stop" event.
         */
-        stopScene(): void; 
+        stopScene(): void;
+
+        /**
+        * Stop a specific script by name from the Three.js editor scene.
+        */
+        stopScript(scriptName: string): void; 
         
         /**
         * Fired when element is clicked on.
