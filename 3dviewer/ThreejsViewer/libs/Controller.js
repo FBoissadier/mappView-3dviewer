@@ -25,6 +25,8 @@ define(["brease", "widgets/3dviewer/common/libs/three.amd.min"], function (
             pointermove: [],
             update: [],
         };
+        this._namedScripts = {}; // Store scripts by name for selective playback
+        this._activeScripts = {}; // Track which scripts are currently active (have registered handlers)
     });
 
     const p = Controller.prototype;
@@ -47,6 +49,10 @@ define(["brease", "widgets/3dviewer/common/libs/three.amd.min"], function (
             /\"/g,
             ""
         );
+
+        // Clear previous named scripts and active scripts
+        this._namedScripts = {};
+        this._activeScripts = {};
 
         for (var uuid in scripts) {
             var object = this.widget._model._scene.getObjectByProperty(
@@ -79,20 +85,16 @@ define(["brease", "widgets/3dviewer/common/libs/three.amd.min"], function (
                         this.widget._model._camera
                     );
 
-                    for (var name in functions) {
-                        if (functions[name] === undefined) continue;
-
-                        if (this._events[name] === undefined) {
-                            console.iatWarn(
-                                "ThreejsViewer: Event type not supported (",
-                                name,
-                                ")"
-                            );
-                            continue;
-                        }
-
-                        this._events[name].push(functions[name].bind(object));
+                    // Store script by name if it has one (but don't register handlers automatically)
+                    if (script.name) {
+                        this._namedScripts[script.name] = {
+                            object: object,
+                            functions: functions,
+                            script: script
+                        };
                     }
+                    // Note: Scripts are NOT automatically registered to event handlers
+                    // They must be explicitly activated via playScript()
                 } catch (e) {
                     console.iatWarn("Error processing script:", e);
                 }
@@ -560,9 +562,154 @@ define(["brease", "widgets/3dviewer/common/libs/three.amd.min"], function (
         this.play();
     };
 
+    /**
+     * @method playScript
+     * Play a specific script by name
+     * @param {String} scriptName - Name of the script to play
+     */
+    p.playScript = function (scriptName) {
+        if (!this.widget.settings.enableScripts) {
+            console.iatWarn("ThreejsViewer: Scripts are disabled. Cannot play script:", scriptName);
+            return;
+        }
+
+        if (!scriptName || typeof scriptName !== 'string') {
+            console.iatWarn("ThreejsViewer: Invalid script name provided:", scriptName);
+            return;
+        }
+
+        const namedScript = this._namedScripts[scriptName];
+        if (!namedScript) {
+            console.iatWarn("ThreejsViewer: Script not found:", scriptName);
+            return;
+        }
+
+        // Check if script is already active
+        if (this._activeScripts[scriptName]) {
+            // Script is already active, just execute start handler again
+            const functions = namedScript.functions;
+            const boundObject = namedScript.object;
+            
+            if (functions.start && typeof functions.start === 'function') {
+                try {
+                    functions.start.call(boundObject);
+                } catch (e) {
+                    console.iatWarn(`Error executing start handler for script "${scriptName}":`, e);
+                }
+            }
+            return;
+        }
+
+        // Register the script's event handlers
+        const functions = namedScript.functions;
+        const boundObject = namedScript.object;
+        const registeredHandlers = {};
+
+        // Register all event handlers for this script
+        for (var eventName in functions) {
+            if (functions[eventName] === undefined) continue;
+
+            if (this._events[eventName] === undefined) {
+                console.iatWarn(
+                    "ThreejsViewer: Event type not supported (",
+                    eventName,
+                    ") for script:",
+                    scriptName
+                );
+                continue;
+            }
+
+            const boundHandler = functions[eventName].bind(boundObject);
+            this._events[eventName].push(boundHandler);
+            registeredHandlers[eventName] = boundHandler;
+        }
+
+        // Track this script as active
+        this._activeScripts[scriptName] = {
+            handlers: registeredHandlers
+        };
+
+        // Ensure scene is playing
+        if (!this.widget._playing) {
+            this.play();
+        }
+
+        // Execute init handler if present
+        if (functions.init && typeof functions.init === 'function') {
+            try {
+                functions.init.call(boundObject);
+            } catch (e) {
+                console.iatWarn(`Error executing init handler for script "${scriptName}":`, e);
+            }
+        }
+
+        // Execute start handler if present
+        if (functions.start && typeof functions.start === 'function') {
+            try {
+                functions.start.call(boundObject);
+            } catch (e) {
+                console.iatWarn(`Error executing start handler for script "${scriptName}":`, e);
+            }
+        }
+    };
+
+    /**
+     * @method stopScript
+     * Stop a specific script by name
+     * @param {String} scriptName - Name of the script to stop
+     */
+    p.stopScript = function (scriptName) {
+        if (!scriptName || typeof scriptName !== 'string') {
+            console.iatWarn("ThreejsViewer: Invalid script name provided:", scriptName);
+            return;
+        }
+
+        const activeScript = this._activeScripts[scriptName];
+        if (!activeScript) {
+            console.iatWarn("ThreejsViewer: Script is not active:", scriptName);
+            return;
+        }
+
+        const namedScript = this._namedScripts[scriptName];
+        if (!namedScript) {
+            console.iatWarn("ThreejsViewer: Script not found:", scriptName);
+            return;
+        }
+
+        // Execute stop handler if present
+        const functions = namedScript.functions;
+        const boundObject = namedScript.object;
+        
+        if (functions.stop && typeof functions.stop === 'function') {
+            try {
+                functions.stop.call(boundObject);
+            } catch (e) {
+                console.iatWarn(`Error executing stop handler for script "${scriptName}":`, e);
+            }
+        }
+
+        // Remove all registered handlers from event arrays
+        const registeredHandlers = activeScript.handlers;
+        for (var eventName in registeredHandlers) {
+            const handler = registeredHandlers[eventName];
+            const eventArray = this._events[eventName];
+            if (eventArray) {
+                const index = eventArray.indexOf(handler);
+                if (index !== -1) {
+                    eventArray.splice(index, 1);
+                }
+            }
+        }
+
+        // Remove from active scripts
+        delete this._activeScripts[scriptName];
+    };
+
     p.dispose = function () {
         this.stop();
         this._events = null;
+        this._namedScripts = null;
+        this._activeScripts = null;
         this.widget = null;
     };
 

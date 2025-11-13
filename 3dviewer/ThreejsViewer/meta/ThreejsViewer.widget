@@ -56,6 +56,14 @@
 			<Method name="PlayScene" read="false">
 				<Description>Start event handling for the scene and dispatch &quot;start&quot; event.</Description>
 			</Method>
+			<Method name="PlayScript" read="false">
+				<Description>Play a specific script by name from the Three.js editor scene.</Description>
+				<Arguments>
+					<Argument name="scriptName" type="String" index="0" required="true">
+						<Description>- Name of the script to play</Description>
+					</Argument>
+				</Arguments>
+			</Method>
 			<Method name="SetEnable" read="false">
 				<Description>Sets the state of property &quot;enable&quot;</Description>
 				<Arguments>
@@ -82,6 +90,14 @@
 			<Method name="ShowTooltip" read="false"/>
 			<Method name="StopScene" read="false">
 				<Description>Stop event handling for the scene and dispatch &quot;stop&quot; event.</Description>
+			</Method>
+			<Method name="StopScript" read="false">
+				<Description>Stop a specific script by name from the Three.js editor scene.</Description>
+				<Arguments>
+					<Argument name="scriptName" type="String" index="0" required="true">
+						<Description>- Name of the script to stop</Description>
+					</Argument>
+				</Arguments>
 			</Method>
 		</Methods>
 		<Events>

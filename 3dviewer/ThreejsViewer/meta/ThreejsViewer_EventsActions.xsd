@@ -52,6 +52,13 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
+	<xs:complexType name="widgets.3dviewer.ThreejsViewer.Action.PlayScript">
+		<xs:complexContent>
+			<xs:extension base="s1:widgets.3dviewer.ThreejsViewer.Action.widgetMethod">
+				<xs:attribute name="scriptName" type="var:String" use="required"></xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
 	<xs:complexType name="widgets.3dviewer.ThreejsViewer.Action.SetEnable">
 		<xs:complexContent>
 			<xs:extension base="s1:widgets.3dviewer.ThreejsViewer.Action.widgetMethod">
@@ -89,6 +96,13 @@
 	<xs:complexType name="widgets.3dviewer.ThreejsViewer.Action.StopScene">
 		<xs:complexContent>
 			<xs:extension base="s1:widgets.3dviewer.ThreejsViewer.Action.widgetMethod">
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="widgets.3dviewer.ThreejsViewer.Action.StopScript">
+		<xs:complexContent>
+			<xs:extension base="s1:widgets.3dviewer.ThreejsViewer.Action.widgetMethod">
+				<xs:attribute name="scriptName" type="var:String" use="required"></xs:attribute>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

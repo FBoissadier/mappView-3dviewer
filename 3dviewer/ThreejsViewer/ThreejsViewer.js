@@ -297,6 +297,28 @@ define([
     };
 
     /**
+     * @method playScript
+     * Play a specific script by name from the Three.js editor scene.
+     * @iatStudioExposed
+     * @param {String} scriptName - Name of the script to play
+     */
+    p.playScript = function (scriptName) {
+        if (!this._controller) this._controller = new Controller(this);
+        this._controller.playScript(scriptName);
+    };
+
+    /**
+     * @method stopScript
+     * Stop a specific script by name from the Three.js editor scene.
+     * @iatStudioExposed
+     * @param {String} scriptName - Name of the script to stop
+     */
+    p.stopScript = function (scriptName) {
+        if (!this._controller) this._controller = new Controller(this);
+        this._controller.stopScript(scriptName);
+    };
+
+    /**
      * @method setBindAttribute
      * Set property value of single bind attribute
      * @param {String} path
