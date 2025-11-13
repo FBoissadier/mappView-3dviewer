@@ -18,6 +18,7 @@ This widget uses the `mpFileManager` to load the 3D scene files. Please make sur
 - **Auto-Play Animations**: Automatically play animations defined in the scene.
 - **Responsive Design**: Automatically adjusts to the widget's container size.
 - **Bind Attribute**: Struct to bind attributes from the scene to opcua variable properties
+- **Utilize Scripting From Threejs Editor**: Write scripts using the Threejs editor and execute the script using mappView actions and events.
 
 ## Configuration Options
 
@@ -114,7 +115,8 @@ The widget provides several actions that can be triggered from the mappView envi
 |--------------------|-----------------------------------------------------------------------------|
 | `playScene`        | Start event handling for the scene and dispatch "start" event.              |
 | `stopScene`        | Stop event handling for the scene and dispatch "stop" event.                |
- 
+| `playScript`       | Start execution of the named embedded script (from the Threejs editor).     |
+| `stopScript`       | Stop execution of the named embedded script (from the Threejs editor).      | 
 
  ## Read actions
 | Action Name        | Type      | Description                                                                 |
